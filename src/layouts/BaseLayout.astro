@@ -1,0 +1,336 @@
+---
+import '../styles/global.css';
+import CommandPalette from '../components/CommandPalette.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Shagoto Sarkar",
+  description = "Personal website and publications of Shagoto Sarkar. Computer Science researcher and engineer focusing on Neuro-Symbolic AI, formal verification, and systems."
+} = Astro.props;
+
+const fullTitle = title === "Shagoto Sarkar" || title.includes("Shagoto Sarkar")
+  ? title 
+  : `${title} — Shagoto Sarkar`;
+
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Shagoto Sarkar" />
+    <meta name="theme-color" content="#FAFAF8" />
+
+    <!-- Semantic Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:site_name" content="Shagoto Sarkar" />
+
+    <!-- Self-hosted Preload Fonts -->
+    <link rel="preload" href="/fonts/eb-garamond-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/eb-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%231D4ED8'/></svg>" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="site-container header-inner">
+        <a href="/" class="site-brand" aria-label="Shagoto Sarkar home">
+          Shagoto Sarkar
+        </a>
+
+        <nav class="site-nav" aria-label="Primary Navigation">
+          <a 
+            href="/research" 
+            class={`nav-link ${currentPath.startsWith('/research') ? 'active' : ''}`}
+          >
+            Research
+          </a>
+          <a 
+            href="/projects" 
+            class={`nav-link ${currentPath.startsWith('/projects') ? 'active' : ''}`}
+          >
+            Projects
+          </a>
+          <a 
+            href="/notes" 
+            class={`nav-link ${currentPath.startsWith('/notes') ? 'active' : ''}`}
+          >
+            Notes
+          </a>
+          <a 
+            href="/cv.pdf" 
+            class="nav-link" 
+            download="Shagoto_Sarkar_CV.pdf"
+            title="Download curriculum vitae"
+          >
+            CV
+          </a>
+          <a 
+            href="javascript:void(0);" 
+            id="nav-contact-link"
+            class="nav-link"
+            data-user="shagotosarkar"
+            data-host="gmail.com"
+          >
+            Contact
+          </a>
+          <button 
+            type="button" 
+            class="search-trigger-btn" 
+            onclick="window.openAxiomCommandPalette && window.openAxiomCommandPalette()"
+            title="Search site (Shortcut: /)"
+            aria-label="Open search dialog"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span class="search-key">/</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content" class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-container footer-inner">
+        <div class="footer-left">
+          <div class="footer-name">Shagoto Sarkar</div>
+          <p class="footer-affiliation">
+            Department of Computer Science &amp; Engineering<br />
+            Daffodil International University &bull; Dhaka, Bangladesh
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <a 
+            href="javascript:void(0);" 
+            id="footer-contact-link"
+            class="footer-link"
+            data-user="shagotosarkar"
+            data-host="gmail.com"
+          >
+            shagotosarkar@gmail.com
+          </a>
+          <a 
+            href="https://github.com/shagoto-sarkar" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="footer-link"
+          >
+            GitHub
+          </a>
+          <a 
+            href="/cv.pdf" 
+            download="Shagoto_Sarkar_CV.pdf" 
+            class="footer-link"
+          >
+            Curriculum Vitae
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Search Overlay -->
+    <CommandPalette />
+
+    <!-- Obfuscated Contact Link Handler -->
+    <script is:inline>
+      (function() {
+        function attachMailto(id) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('click', function(e) {
+              e.preventDefault();
+              const u = this.getAttribute('data-user') || 'shagotosarkar';
+              const h = this.getAttribute('data-host') || 'gmail.com';
+              window.location.href = 'mailto:' + u + '@' + h;
+            });
+          }
+        }
+        attachMailto('nav-contact-link');
+        attachMailto('footer-contact-link');
+      })();
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    background-color: var(--color-bg-base);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+  }
+
+  .site-brand {
+    font-family: var(--font-editorial);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .site-brand:hover {
+    color: var(--color-accent);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .nav-link {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: 4px 0;
+    position: relative;
+    transition: color var(--motion-duration) ease;
+  }
+
+  .nav-link:hover {
+    color: var(--color-text-primary);
+  }
+
+  .nav-link.active {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-text-primary);
+  }
+
+  .search-trigger-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    transition: border-color var(--motion-duration) ease, color var(--motion-duration) ease;
+  }
+
+  .search-trigger-btn:hover {
+    border-color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+  }
+
+  .search-key {
+    background-color: var(--color-bg-subtle);
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 0.6875rem;
+  }
+
+  .site-main {
+    flex: 1;
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-20);
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-surface);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+
+  .footer-name {
+    font-family: var(--font-editorial);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+  }
+
+  .footer-affiliation {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .footer-link:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .site-nav {
+      gap: var(--space-4);
+    }
+    
+    .nav-link {
+      font-size: 0.875rem;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+  }
+</style>

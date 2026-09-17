@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Page Not Found"
+  description="The requested page could not be found."
+>
+  <div class="site-container">
+    <div class="not-found-container">
+      <span class="eyebrow">Error 404</span>
+      <h1 class="not-found-title">Page Not Found</h1>
+      <p class="prose not-found-desc">
+        The requested page or document does not exist, or has been moved to another location.
+      </p>
+
+      <div class="directory-list">
+        <h2 class="directory-heading">Available Sections</h2>
+        <ul class="directory-links">
+          <li><a href="/" class="text-link">Home &amp; Overview</a></li>
+          <li><a href="/research" class="text-link">Research &amp; Formal Verification</a></li>
+          <li><a href="/projects" class="text-link">Systems &amp; Software Projects</a></li>
+          <li><a href="/notes" class="text-link">Notes, Logs &amp; Essays</a></li>
+          <li><a href="/cv.pdf" class="text-link" download="Shagoto_Sarkar_CV.pdf">Curriculum Vitae (PDF)</a></li>
+        </ul>
+      </div>
+
+      <div class="not-found-actions">
+        <a href="/" class="button primary">Return to Home</a>
+        <button 
+          type="button" 
+          class="button" 
+          onclick="window.openAxiomCommandPalette && window.openAxiomCommandPalette()"
+        >
+          Search Site
+        </button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found-container {
+    max-width: 640px;
+    padding: var(--space-8) 0;
+  }
+
+  .not-found-title {
+    font-size: 2.75rem;
+    font-weight: 600;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .not-found-desc {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
+  }
+
+  .directory-list {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .directory-heading {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .directory-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .directory-links li {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+  }
+
+  .not-found-actions {
+    display: flex;
+    gap: var(--space-3);
+  }
+</style>

@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import { getCollection } from 'astro:content';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export async function getStaticPaths() {
+  const projectEntries = await getCollection('projects');
+  return projectEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const diagramMap: Record<string, string> = {
+  'opengl-lower-manhattan': 'opengl-simulation-architecture',
+  'js-mini-compiler-ide': 'js-compiler-architecture',
+  'java-ridesharing-gui': 'java-ridesharing-architecture'
+};
+
+const diagramId = diagramMap[entry.slug];
+let svgContent = '';
+if (diagramId) {
+  const diagramPath = path.resolve(`./src/assets/diagrams/${diagramId}.svg`);
+  if (fs.existsSync(diagramPath)) {
+    svgContent = fs.readFileSync(diagramPath, 'utf8');
+  }
+}
+
+const dateFormatted = new Intl.DateTimeFormat('en-US', { 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric' 
+}).format(entry.data.date);
+
+const metaDescription = entry.data.constraint.slice(0, 150);
+---
+
+<BaseLayout 
+  title={`${entry.data.title} — Projects`}
+  description={metaDescription}
+>
+  <div class="site-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/projects" class="breadcrumb-link">&larr; Projects</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{entry.data.title}</span>
+    </nav>
+
+    <article class="project-article">
+      <header class="project-header">
+        <div class="project-meta">
+          <span class="eyebrow">Technical Brief</span>
+          <span class="project-date">{dateFormatted}</span>
+        </div>
+
+        <h1 class="project-title">{entry.data.title}</h1>
+
+        {entry.data.collaborators && entry.data.collaborators.length > 0 && (
+          <p class="collaboration-note">
+            Developed in engineering collaboration with <strong>{entry.data.collaborators.join(', ')}</strong>.
+          </p>
+        )}
+
+        <div class="constraint-card">
+          <h2 class="constraint-heading">Core Constraint &amp; Objective</h2>
+          <p class="prose constraint-desc">{entry.data.constraint}</p>
+        </div>
+
+        <div class="project-links-bar">
+          <div class="stack-tags">
+            {entry.data.techStack.map(t => (
+              <span class="tag">{t}</span>
+            ))}
+          </div>
+
+          {entry.data.repoUrl && (
+            <a href={entry.data.repoUrl} target="_blank" rel="noopener noreferrer" class="button">
+              View Source Repository &rarr;
+            </a>
+          )}
+        </div>
+      </header>
+
+      {svgContent && (
+        <section class="diagram-section" aria-label="System Architecture Diagram">
+          <ArchitectureDiagram 
+            title={entry.data.title + " Architecture"}
+            ariaLabel={`Architecture diagram representing ${entry.data.title}`}
+            svgContent={svgContent}
+            caption="High-level architectural pipeline and component decomposition."
+          />
+        </section>
+      )}
+
+      <div class="project-prose prose">
+        <Content />
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-6);
+  }
+
+  .breadcrumb-link {
+    color: var(--color-text-secondary);
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-accent);
+  }
+
+  .breadcrumb-separator {
+    color: var(--color-border);
+  }
+
+  .project-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .project-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .project-date {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+
+  .project-title {
+    font-size: 2.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-primary);
+  }
+
+  .collaboration-note {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+  }
+
+  .constraint-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .constraint-heading {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin-top: 0;
+    margin-bottom: var(--space-2);
+  }
+
+  .constraint-desc {
+    font-size: 1.125rem;
+    color: var(--color-text-primary);
+    max-width: 100%;
+    margin-bottom: 0;
+  }
+
+  .project-links-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .stack-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .diagram-section {
+    margin-bottom: var(--space-8);
+  }
+
+  .project-prose {
+    max-width: var(--max-prose-width);
+  }
+
+  @media (max-width: 640px) {
+    .project-title {
+      font-size: 2.15rem;
+    }
+  }
+</style>

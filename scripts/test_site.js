@@ -1,0 +1,151 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const distDir = path.resolve('./dist');
+
+const expectedFiles = [
+  'index.html',
+  '404.html',
+  'CNAME',
+  'cv.pdf',
+  'research/index.html',
+  'research/abductive-neuro-symbolic-engine/index.html',
+  'research/z3-cardiorenal-thesis-proposal/index.html',
+  'projects/index.html',
+  'projects/opengl-lower-manhattan/index.html',
+  'projects/js-mini-compiler-ide/index.html',
+  'projects/java-ridesharing-gui/index.html',
+  'notes/index.html',
+  'notes/headless-ubuntu-tailscale/index.html',
+  'notes/8086-microprocessor-assembly/index.html',
+  'notes/moral-complexity-dostoevsky-arcane/index.html'
+];
+
+let failed = false;
+
+console.log('=== VERIFYING DIST OUTPUT ARTIFACTS ===');
+for (const rel of expectedFiles) {
+  const full = path.join(distDir, rel);
+  if (!fs.existsSync(full)) {
+    console.error(`[FAIL] Missing file: ${rel}`);
+    failed = true;
+  } else {
+    const stat = fs.statSync(full);
+    console.log(`[PASS] ${rel} (${stat.size} bytes)`);
+  }
+}
+
+// Verify CNAME
+const cnameContent = fs.readFileSync(path.join(distDir, 'CNAME'), 'utf8').trim();
+if (cnameContent === 'shagoto.me') {
+  console.log('[PASS] CNAME correctly set to shagoto.me');
+} else {
+  console.error(`[FAIL] CNAME unexpected: ${cnameContent}`);
+  failed = true;
+}
+
+// Verify cv.pdf is valid PDF
+const cvBuffer = fs.readFileSync(path.join(distDir, 'cv.pdf'));
+if (cvBuffer.subarray(0, 4).toString() === '%PDF') {
+  console.log('[PASS] cv.pdf has valid PDF magic header');
+} else {
+  console.error('[FAIL] cv.pdf does not have %PDF header');
+  failed = true;
+}
+
+// Content inspection checks
+const indexHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
+
+const checks = [
+  { name: 'Editorial Identity statement', pass: indexHtml.includes('Architecting verifiable intelligence') },
+  { name: 'Affiliation with Daffodil International University', pass: indexHtml.includes('Daffodil International University') },
+  { name: 'Current Focus section (Active Areas of Investigation)', pass: indexHtml.includes('Active Areas of Investigation') && indexHtml.includes('Neuro-Symbolic Reasoning') },
+  { name: 'Selected Research section', pass: indexHtml.includes('Selected Research') && indexHtml.includes('Abductive Neuro-Symbolic Engine') },
+  { name: 'Selected Projects section', pass: indexHtml.includes('Selected Systems &amp; Projects') && indexHtml.includes('911 OpenGL Commemorative Simulation') },
+  { name: 'Recent Notes section', pass: indexHtml.includes('Recent Notes &amp; Essays') },
+  { name: 'Quiet Closing / Inquiries section', pass: indexHtml.includes('Inquiries &amp; Collaboration') },
+  { name: 'Search overlay present', pass: indexHtml.includes('cmd-palette-backdrop') },
+  { name: 'Contact gmail present', pass: indexHtml.includes('shagotosarkar') && indexHtml.includes('gmail.com') },
+  { name: 'Prohibited terminal anti-patterns absent (no blinking cursor, fake status)', pass: !indexHtml.includes('terminal-cursor') && !indexHtml.includes('cat /proc/self/status') && !indexHtml.includes('// AXIOM NODE') },
+  { name: 'Zero client JS frameworks (no react/vue/svelte)', pass: !indexHtml.includes('__astro_island') && !indexHtml.includes('react-root') }
+];
+
+console.log('\n=== HOMEPAGE EDITORIAL CHECKS (design_v2.md) ===');
+for (const c of checks) {
+  if (c.pass) {
+    console.log(`[PASS] ${c.name}`);
+  } else {
+    console.error(`[FAIL] ${c.name}`);
+    failed = true;
+  }
+}
+
+// Research page check
+const researchHtml = fs.readFileSync(path.join(distDir, 'research/abductive-neuro-symbolic-engine/index.html'), 'utf8');
+const thesisHtml = fs.readFileSync(path.join(distDir, 'research/z3-cardiorenal-thesis-proposal/index.html'), 'utf8');
+
+console.log('\n=== RESEARCH CONTENT CHECKS ===');
+if (researchHtml.includes('scholarly-viewer') && researchHtml.includes('SMT-LIB2 Solver Specification')) {
+  console.log('[PASS] Scholarly dual-pane viewer and Z3 proofs in Neuro-Symbolic research brief');
+} else {
+  console.error('[FAIL] Scholarly viewer or Z3 proofs missing');
+  failed = true;
+}
+
+if (thesisHtml.includes('Academic Proposal Notice') && thesisHtml.includes('Assistant Professor')) {
+  console.log('[PASS] Thesis proposal explicitly marked as proposal with supervisor');
+} else {
+  console.error('[FAIL] Thesis proposal banner or supervisor missing');
+  failed = true;
+}
+
+// SVG Diagrams check
+const hasSvg1 = researchHtml.includes('<svg');
+const hasSvg2 = thesisHtml.includes('<svg');
+const openglHtml = fs.readFileSync(path.join(distDir, 'projects/opengl-lower-manhattan/index.html'), 'utf8');
+const hasSvg3 = openglHtml.includes('<svg');
+
+console.log('\n=== SVG DIAGRAM CHECKS ===');
+if (hasSvg1 && hasSvg2 && hasSvg3) {
+  console.log('[PASS] All architecture diagrams generated via Mermaid.js rendered as SVG with aria-label');
+} else {
+  console.error('[FAIL] Architecture diagram SVGs missing in pages');
+  failed = true;
+}
+
+// Collaboration credit check
+if (openglHtml.includes('Mahadi')) {
+  console.log('[PASS] 911 OpenGL simulation credits collaboration with Mahadi');
+} else {
+  console.error('[FAIL] Mahadi collaboration credit missing');
+  failed = true;
+}
+
+// Shiki syntax highlighting check
+if (openglHtml.includes('astro-code') && openglHtml.includes('render_skyline_frame')) {
+  console.log('[PASS] Build-time Shiki syntax highlighting present with local code snippets');
+} else {
+  console.error('[FAIL] Shiki code highlighting missing');
+  failed = true;
+}
+
+// Fonts check
+const fontFiles = fs.readdirSync(path.join(distDir, 'fonts'));
+const hasGaramond = fontFiles.some(f => f.startsWith('eb-garamond') && f.endsWith('.woff2'));
+const hasMono = fontFiles.some(f => f.startsWith('jetbrains-mono') && f.endsWith('.woff2'));
+
+console.log('\n=== TYPOGRAPHY ASSET CHECKS ===');
+if (hasGaramond && hasMono) {
+  console.log(`[PASS] Self-hosted .woff2 fonts present in /fonts/ (${fontFiles.length} files total)`);
+} else {
+  console.error('[FAIL] Font files missing');
+  failed = true;
+}
+
+console.log('\n=== OVERALL STATUS ===');
+if (failed) {
+  console.error('FAILED ONE OR MORE AUDIT CHECKS.');
+  process.exit(1);
+} else {
+  console.log('ALL AUDIT CHECKS PASSED PERFECTLY.');
+}

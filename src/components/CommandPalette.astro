@@ -1,0 +1,319 @@
+---
+// CommandPalette Component — Clean, quiet editorial search overlay
+---
+
+<div id="cmd-palette-backdrop" class="cmd-backdrop" aria-hidden="true" style="display: none;">
+  <div class="cmd-modal" role="dialog" aria-modal="true" aria-label="Search and Navigation">
+    <div class="cmd-header">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        id="cmd-input" 
+        class="cmd-input" 
+        placeholder="Search research, projects, notes..." 
+        autocomplete="off" 
+        spellcheck="false"
+      />
+      <button type="button" id="cmd-close" class="cmd-close-btn" aria-label="Close search">Esc</button>
+    </div>
+
+    <div class="cmd-results" id="cmd-results" role="listbox">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <div class="cmd-footer">
+      <span>Use ↑ and ↓ to navigate</span>
+      <span>↵ to select</span>
+      <span>esc to close</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cmd-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 14vh;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .cmd-modal {
+    width: 100%;
+    max-width: 580px;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  .cmd-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  .cmd-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--color-text-primary);
+  }
+
+  .cmd-close-btn {
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+
+  .cmd-close-btn:hover {
+    color: var(--color-text-primary);
+  }
+
+  .cmd-results {
+    max-height: 360px;
+    overflow-y: auto;
+    padding: var(--space-2) 0;
+  }
+
+  :global(.cmd-item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background-color var(--motion-duration) ease;
+  }
+
+  :global(.cmd-item.selected), :global(.cmd-item:hover) {
+    background-color: var(--color-bg-subtle);
+  }
+
+  :global(.cmd-item-title) {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  :global(.cmd-meta) {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  :global(.cmd-badge) {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cmd-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    background-color: var(--color-bg-subtle);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    const nodes = [
+      { title: "Overview", path: "/", section: "Page", desc: "Introduction, selected work, research, and current focus" },
+      { title: "Research Index", path: "/research", section: "Research", desc: "Formal verification, Z3 SMT, and clinical reasoning" },
+      { title: "Abductive Neuro-Symbolic Engine", path: "/research/abductive-neuro-symbolic-engine", section: "Research", desc: "LLM semantic extraction + Pydantic validation + Microsoft Z3 SMT" },
+      { title: "Formal Verification of Cardiorenal-Metabolic Guidelines", path: "/research/z3-cardiorenal-thesis-proposal", section: "Research", desc: "Undergraduate thesis proposal modeling multi-morbidity polypharmacy" },
+      { title: "Projects Index", path: "/projects", section: "Projects", desc: "Low-level systems, graphics simulations, and compilers" },
+      { title: "911 OpenGL Commemorative Simulation", path: "/projects/opengl-lower-manhattan", section: "Projects", desc: "Real-time C++ graphics pipeline sustaining 60fps" },
+      { title: "Diu Shagoto IDE & Mini-Compiler", path: "/projects/js-mini-compiler-ide", section: "Projects", desc: "In-browser lexical tokenizer and recursive descent parser" },
+      { title: "DIU Everywhere Ride-Sharing GUI", path: "/projects/java-ridesharing-gui", section: "Projects", desc: "Multi-threaded Java Swing desktop architecture with SQL transactions" },
+      { title: "Notes & Essays Index", path: "/notes", section: "Notes", desc: "Technical field notes, microprocessor solutions, and reflections" },
+      { title: "Headless Ubuntu Server Management", path: "/notes/headless-ubuntu-tailscale", section: "Notes", desc: "Tailscale WireGuard overlay mesh and systemd services" },
+      { title: "8086 Microprocessor Assembly Solutions", path: "/notes/8086-microprocessor-assembly", section: "Notes", desc: "Low-level assembly optimizations and interrupt handling" },
+      { title: "Moral Complexity, Determinism, and Tragedy: Dostoevsky and Arcane", path: "/notes/moral-complexity-dostoevsky-arcane", section: "Notes", desc: "Literary and philosophical analysis on systemic determinism" },
+      { title: "Curriculum Vitae (PDF)", path: "/cv.pdf", section: "Document", desc: "Academic and professional resume" }
+    ];
+
+    let selectedIndex = 0;
+    let filteredNodes = [...nodes];
+
+    const backdrop = document.getElementById('cmd-palette-backdrop');
+    const input = document.getElementById('cmd-input');
+    const resultsContainer = document.getElementById('cmd-results');
+    const closeBtn = document.getElementById('cmd-close');
+
+    function openPalette() {
+      if (!backdrop || !input) return;
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden', 'false');
+      input.value = '';
+      filteredNodes = [...nodes];
+      selectedIndex = 0;
+      renderResults();
+      setTimeout(() => input.focus(), 20);
+    }
+
+    function closePalette() {
+      if (!backdrop) return;
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    function renderResults() {
+      if (!resultsContainer) return;
+      resultsContainer.innerHTML = '';
+
+      if (filteredNodes.length === 0) {
+        resultsContainer.innerHTML = '<div style="padding: 16px 20px; color: var(--color-text-muted); font-size: 0.875rem;">No matching pages found</div>';
+        return;
+      }
+
+      filteredNodes.forEach((node, index) => {
+        const item = document.createElement('a');
+        item.href = node.path;
+        item.className = 'cmd-item' + (index === selectedIndex ? ' selected' : '');
+        item.setAttribute('role', 'option');
+        item.setAttribute('aria-selected', index === selectedIndex ? 'true' : 'false');
+        
+        item.innerHTML = `
+          <div>
+            <div class="cmd-item-title">${node.title}</div>
+            <div class="cmd-meta">${node.desc}</div>
+          </div>
+          <span class="cmd-badge">${node.section}</span>
+        `;
+
+        item.addEventListener('mouseenter', () => {
+          selectedIndex = index;
+          updateSelection();
+        });
+
+        resultsContainer.appendChild(item);
+      });
+
+      ensureVisible();
+    }
+
+    function updateSelection() {
+      const items = resultsContainer.querySelectorAll('.cmd-item');
+      items.forEach((item, index) => {
+        if (index === selectedIndex) {
+          item.classList.add('selected');
+          item.setAttribute('aria-selected', 'true');
+        } else {
+          item.classList.remove('selected');
+          item.setAttribute('aria-selected', 'false');
+        }
+      });
+      ensureVisible();
+    }
+
+    function ensureVisible() {
+      const selectedItem = resultsContainer.querySelector('.cmd-item.selected');
+      if (selectedItem) {
+        selectedItem.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    function handleFilter() {
+      const query = input.value.toLowerCase().trim();
+      if (!query) {
+        filteredNodes = [...nodes];
+      } else {
+        filteredNodes = nodes.filter(n => 
+          n.title.toLowerCase().includes(query) || 
+          n.desc.toLowerCase().includes(query) ||
+          n.section.toLowerCase().includes(query) ||
+          n.path.toLowerCase().includes(query)
+        );
+      }
+      selectedIndex = 0;
+      renderResults();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if ((e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) && tag !== 'input' && tag !== 'textarea') {
+        e.preventDefault();
+        openPalette();
+      } else if (e.key === 'Escape' && backdrop && backdrop.style.display !== 'none') {
+        e.preventDefault();
+        closePalette();
+      }
+    });
+
+    if (input) {
+      input.addEventListener('input', handleFilter);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (filteredNodes.length > 0) {
+            selectedIndex = (selectedIndex + 1) % filteredNodes.length;
+            updateSelection();
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (filteredNodes.length > 0) {
+            selectedIndex = (selectedIndex - 1 + filteredNodes.length) % filteredNodes.length;
+            updateSelection();
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (filteredNodes[selectedIndex]) {
+            window.location.href = filteredNodes[selectedIndex].path;
+          }
+        }
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePalette);
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          closePalette();
+        }
+      });
+    }
+
+    window.openAxiomCommandPalette = openPalette;
+  })();
+</script>

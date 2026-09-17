@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import { getCollection } from 'astro:content';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export async function getStaticPaths() {
+  const notesEntries = await getCollection('notes');
+  return notesEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+let svgContent = '';
+if (entry.slug === 'headless-ubuntu-tailscale') {
+  const diagramPath = path.resolve('./src/assets/diagrams/headless-ubuntu-architecture.svg');
+  if (fs.existsSync(diagramPath)) {
+    svgContent = fs.readFileSync(diagramPath, 'utf8');
+  }
+}
+
+const dateFormatted = new Intl.DateTimeFormat('en-US', { 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric' 
+}).format(entry.data.date);
+
+const metaDescription = `Field note by Shagoto Sarkar: ${entry.data.title}.`;
+---
+
+<BaseLayout 
+  title={`${entry.data.title} — Notes`}
+  description={metaDescription}
+>
+  <div class="site-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/notes" class="breadcrumb-link">&larr; Notes &amp; Essays</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{entry.data.title}</span>
+    </nav>
+
+    <article class="note-article">
+      <header class="note-header">
+        <div class="note-meta">
+          <span class="eyebrow">{entry.data.category}</span>
+          <time class="note-date">{dateFormatted}</time>
+        </div>
+
+        <h1 class="note-title">{entry.data.title}</h1>
+
+        <div class="note-tags">
+          {entry.data.tags.map(t => (
+            <span class="tag">{t}</span>
+          ))}
+        </div>
+      </header>
+
+      <hr class="hairline" />
+
+      {svgContent && (
+        <div class="note-diagram">
+          <ArchitectureDiagram 
+            title="Server & Mesh Network Topology"
+            ariaLabel="Architecture diagram illustrating headless server deployment over Tailscale mesh network."
+            svgContent={svgContent}
+            caption="Zero-trust WireGuard mesh infrastructure routing secure SSH tunnels into the headless compute node."
+          />
+        </div>
+      )}
+
+      <div class="note-body prose">
+        <Content />
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-6);
+  }
+
+  .breadcrumb-link {
+    color: var(--color-text-secondary);
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-accent);
+  }
+
+  .breadcrumb-separator {
+    color: var(--color-border);
+  }
+
+  .note-header {
+    max-width: var(--max-prose-width);
+    margin-bottom: var(--space-8);
+  }
+
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .note-date {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+
+  .note-title {
+    font-size: 2.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-primary);
+  }
+
+  .note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .note-diagram {
+    max-width: var(--max-prose-width);
+    margin: var(--space-8) 0;
+  }
+
+  .note-body {
+    padding-top: var(--space-8);
+    max-width: var(--max-prose-width);
+  }
+
+  @media (max-width: 640px) {
+    .note-title {
+      font-size: 2.15rem;
+    }
+  }
+</style>

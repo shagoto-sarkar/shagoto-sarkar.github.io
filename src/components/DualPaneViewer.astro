@@ -1,0 +1,219 @@
+---
+interface Props {
+  proseTitle?: string;
+  proofTitle?: string;
+}
+
+const {
+  proseTitle = "Methodology & Analysis",
+  proofTitle = "Formal Proofs & Architecture"
+} = Astro.props;
+---
+
+<div class="scholarly-viewer" id="dual-pane-root">
+  <div class="viewer-controls">
+    <div class="viewer-caption">
+      <span class="viewer-caption-label">View Mode:</span>
+      <span class="viewer-caption-state" id="view-state-indicator">Side-by-Side</span>
+    </div>
+
+    <div class="viewer-tabs" role="tablist" aria-label="Research View Options">
+      <button type="button" class="viewer-tab active" data-view="split" id="btn-split">
+        Side-by-Side
+      </button>
+      <button type="button" class="viewer-tab" data-view="prose" id="btn-prose">
+        Methodology
+      </button>
+      <button type="button" class="viewer-tab" data-view="proof" id="btn-proof">
+        Proofs &amp; Models
+      </button>
+    </div>
+  </div>
+
+  <div class="viewer-grid view-split" id="dual-pane-grid">
+    <section class="viewer-column viewer-prose" id="pane-prose-col" aria-label="Methodology Section">
+      <div class="column-header">
+        <h3 class="column-title">{proseTitle}</h3>
+      </div>
+      <div class="column-content prose">
+        <slot name="prose" />
+      </div>
+    </section>
+
+    <section class="viewer-column viewer-proof" id="pane-proof-col" aria-label="Formal Proofs Section">
+      <div class="column-header">
+        <h3 class="column-title">{proofTitle}</h3>
+      </div>
+      <div class="column-content">
+        <slot name="proof" />
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .scholarly-viewer {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    background-color: var(--color-bg-surface);
+    margin: var(--space-8) 0;
+    overflow: hidden;
+  }
+
+  .viewer-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    background-color: var(--color-bg-base);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+  }
+
+  .viewer-caption-label {
+    color: var(--color-text-muted);
+    margin-right: 4px;
+  }
+
+  .viewer-caption-state {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .viewer-tabs {
+    display: flex;
+    gap: var(--space-1);
+    background-color: var(--color-bg-subtle);
+    padding: 3px;
+    border-radius: var(--radius-subtle);
+  }
+
+  .viewer-tab {
+    background: transparent;
+    border: none;
+    padding: 4px 10px;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-subtle);
+    cursor: pointer;
+    transition: background-color var(--motion-duration) ease, color var(--motion-duration) ease;
+  }
+
+  .viewer-tab.active, .viewer-tab:hover {
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .viewer-grid {
+    display: grid;
+    min-height: 520px;
+  }
+
+  .viewer-grid.view-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .viewer-grid.view-prose {
+    grid-template-columns: 1fr;
+  }
+
+  .viewer-grid.view-prose .viewer-proof {
+    display: none;
+  }
+
+  .viewer-grid.view-proof {
+    grid-template-columns: 1fr;
+  }
+
+  .viewer-grid.view-proof .viewer-prose {
+    display: none;
+  }
+
+  .viewer-column {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .viewer-prose {
+    border-right: 1px solid var(--color-border);
+  }
+
+  .viewer-grid.view-prose .viewer-prose {
+    border-right: none;
+  }
+
+  .column-header {
+    padding: var(--space-3) var(--space-5);
+    background-color: var(--color-bg-subtle);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .column-title {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .column-content {
+    padding: var(--space-6);
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  @media (max-width: 860px) {
+    .viewer-grid.view-split {
+      grid-template-columns: 1fr;
+    }
+
+    .viewer-prose {
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+    }
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    const root = document.getElementById('dual-pane-root');
+    if (!root) return;
+
+    const grid = document.getElementById('dual-pane-grid');
+    const indicator = document.getElementById('view-state-indicator');
+    const tabs = root.querySelectorAll('.viewer-tab');
+
+    const labels = {
+      split: 'Side-by-Side',
+      prose: 'Methodology Only',
+      proof: 'Proofs Only'
+    };
+
+    function setView(mode) {
+      if (!grid || !indicator) return;
+      grid.className = 'viewer-grid view-' + mode;
+      indicator.textContent = labels[mode] || mode;
+
+      tabs.forEach(tab => {
+        if (tab.getAttribute('data-view') === mode) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const mode = tab.getAttribute('data-view');
+        if (mode) setView(mode);
+      });
+    });
+  })();
+</script>

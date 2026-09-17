@@ -1,0 +1,128 @@
+---
+interface Props {
+  title: string;
+  ariaLabel: string;
+  svgContent: string;
+  caption?: string;
+  mermaidCode?: string;
+}
+
+const { title, ariaLabel, svgContent, caption, mermaidCode } = Astro.props;
+---
+
+<figure class="diagram-figure" role="figure" aria-label={ariaLabel}>
+  <div class="diagram-header">
+    <figcaption class="diagram-caption">
+      <span class="diagram-label">Figure</span>
+      <span class="diagram-title">{title}</span>
+    </figcaption>
+    {mermaidCode && (
+      <span class="diagram-badge">Mermaid Specification</span>
+    )}
+  </div>
+
+  <div class="diagram-frame" set:html={svgContent}></div>
+
+  {caption && <p class="diagram-subtext">{caption}</p>}
+
+  {mermaidCode && (
+    <details class="diagram-code-details">
+      <summary class="diagram-code-summary">View Mermaid source</summary>
+      <pre class="astro-code"><code>{mermaidCode}</code></pre>
+    </details>
+  )}
+</figure>
+
+<style>
+  .diagram-figure {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    margin: var(--space-8) 0;
+    overflow: hidden;
+  }
+
+  .diagram-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-base);
+  }
+
+  .diagram-caption {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .diagram-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .diagram-title {
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .diagram-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+  }
+
+  .diagram-frame {
+    padding: var(--space-6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+    background-color: var(--color-bg-surface);
+  }
+
+  .diagram-frame :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .diagram-subtext {
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    border-top: 1px solid var(--color-border-subtle);
+    margin: 0;
+  }
+
+  .diagram-code-details {
+    border-top: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-subtle);
+  }
+
+  .diagram-code-summary {
+    padding: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .diagram-code-summary:hover {
+    color: var(--color-accent);
+  }
+
+  .diagram-code-details pre {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+</style>

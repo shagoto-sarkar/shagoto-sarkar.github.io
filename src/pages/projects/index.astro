@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ExecutionCard from '../../components/ExecutionCard.astro';
+import { getCollection } from 'astro:content';
+
+const projectEntries = (await getCollection('projects')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<BaseLayout 
+  title="Projects — Systems & Software Engineering"
+  description="Engineering briefs, low-level C++ graphics pipelines, educational compilers, and desktop concurrency architectures by Shagoto Sarkar."
+>
+  <div class="site-container">
+    <header class="page-intro">
+      <span class="eyebrow">Engineering</span>
+      <h1 class="page-heading">Systems &amp; Software Engineering</h1>
+      <p class="prose page-desc">
+        Selected software engineering initiatives emphasizing low-level performance, hardware constraints, 
+        language toolchains, and concurrency guarantees.
+      </p>
+    </header>
+
+    <hr class="hairline page-divider" />
+
+    <div class="projects-list">
+      {projectEntries.map((item) => (
+        <ExecutionCard
+          href={`/projects/${item.slug}`}
+          title={item.data.title}
+          subtitle={item.data.collaborators?.length ? `In collaboration with ${item.data.collaborators.join(', ')}` : undefined}
+          description={item.data.constraint}
+          date={item.data.date}
+          tags={item.data.techStack}
+          category="Engineering Brief"
+          actionText="Read technical brief &rarr;"
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-intro {
+    padding-top: var(--space-4);
+    max-width: 820px;
+  }
+
+  .page-heading {
+    font-size: 2.75rem;
+    font-weight: 600;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .page-desc {
+    font-size: 1.1875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .page-divider {
+    margin: var(--space-10) 0;
+  }
+
+  .projects-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 960px) {
+    .projects-list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .projects-list {
+      grid-template-columns: 1fr;
+    }
+    .page-heading {
+      font-size: 2.25rem;
+    }
+  }
+</style>

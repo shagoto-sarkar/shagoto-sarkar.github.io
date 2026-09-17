@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ExecutionCard from '../components/ExecutionCard.astro';
+import { getCollection } from 'astro:content';
+
+const allResearch = await getCollection('research');
+const allProjects = await getCollection('projects');
+const allNotes = await getCollection('notes');
+
+// Sort entries chronologically
+const sortedResearch = [...allResearch].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const sortedProjects = [...allProjects].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const sortedNotes = [...allNotes].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout 
+  title="Shagoto Sarkar"
+  description="Computer Science researcher and software engineer specializing in Neuro-Symbolic AI, formal verification, and low-level systems."
+>
+  <div class="site-container">
+    <!-- 01 — IDENTITY HERO -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-intro">
+        <span class="eyebrow">Computer Science &bull; Systems &bull; Research</span>
+        <h1 id="hero-title" class="hero-heading">
+          Architecting verifiable intelligence through deterministic rigor.
+        </h1>
+        <div class="hero-prose prose">
+          <p>
+            I am an undergraduate researcher and software engineer at Daffodil International University in Dhaka. 
+            My work explores the intersection of <strong>probabilistic machine learning</strong> and 
+            <strong>formal verification</strong>—integrating Large Language Models with SMT solvers 
+            (Microsoft Z3) to eliminate hallucinations in safety-critical clinical environments.
+          </p>
+          <p>
+            In parallel, I build low-level systems in C++ and manage headless Unix infrastructure, 
+            driven by an interest in computational efficiency, memory guarantees, and foundational software engineering.
+          </p>
+        </div>
+
+        <div class="hero-links">
+          <a href="/research" class="button primary">Explore Research</a>
+          <a href="/projects" class="button">View Projects</a>
+          <a href="/cv.pdf" class="button" download="Shagoto_Sarkar_CV.pdf">Download CV</a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hairline section-divider" />
+
+    <!-- 05 — CURRENT FOCUS (Subtle Informational Callout) -->
+    <section class="focus-section" aria-label="Current research and engineering focus">
+      <div class="focus-header">
+        <span class="eyebrow">Current Focus</span>
+        <h2 class="focus-title">Active Areas of Investigation</h2>
+      </div>
+      <div class="focus-grid">
+        <div class="focus-item">
+          <h3 class="focus-topic">Neuro-Symbolic Reasoning</h3>
+          <p class="focus-desc">Bridging unstructured clinical narratives to typed First-Order Logic constraints via SMT theorem provers.</p>
+        </div>
+        <div class="focus-item">
+          <h3 class="focus-topic">Clinical Guideline Formalization</h3>
+          <p class="focus-desc">Modeling polypharmacy contraindications across concurrent CKD, diabetes, and heart failure protocols.</p>
+        </div>
+        <div class="focus-item">
+          <h3 class="focus-topic">Bare-Metal Systems</h3>
+          <p class="focus-desc">Low-level graphics pipelines, deterministic 60fps frame scheduling in C++, and headless server orchestration.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="hairline section-divider" />
+
+    <!-- 03 — RESEARCH SECTION -->
+    <section class="content-section" aria-labelledby="research-heading">
+      <div class="section-top">
+        <div>
+          <span class="eyebrow">Academic Work</span>
+          <h2 id="research-heading" class="section-heading">Selected Research</h2>
+        </div>
+        <a href="/research" class="section-more-link">View all research &rarr;</a>
+      </div>
+
+      <div class="editorial-grid">
+        {sortedResearch.map((item) => (
+          <ExecutionCard
+            href={`/research/${item.slug}`}
+            title={item.data.title}
+            subtitle={item.data.supervisor ? `Supervised by: ${item.data.supervisor}` : undefined}
+            description={item.data.abstract}
+            date={item.data.date}
+            tags={item.data.tags}
+            status={item.data.status}
+            isProposal={item.data.isProposal}
+            actionText="Read research brief &rarr;"
+          />
+        ))}
+      </div>
+    </section>
+
+    <hr class="hairline section-divider" />
+
+    <!-- 02 — SELECTED WORK (PROJECTS) -->
+    <section class="content-section" aria-labelledby="projects-heading">
+      <div class="section-top">
+        <div>
+          <span class="eyebrow">Engineering</span>
+          <h2 id="projects-heading" class="section-heading">Selected Systems &amp; Projects</h2>
+        </div>
+        <a href="/projects" class="section-more-link">View all projects &rarr;</a>
+      </div>
+
+      <div class="editorial-grid three-col">
+        {sortedProjects.map((item) => (
+          <ExecutionCard
+            href={`/projects/${item.slug}`}
+            title={item.data.title}
+            subtitle={item.data.collaborators?.length ? `In collaboration with ${item.data.collaborators.join(', ')}` : undefined}
+            description={item.data.constraint}
+            date={item.data.date}
+            tags={item.data.techStack}
+            category="Project"
+            actionText="Explore technical brief &rarr;"
+          />
+        ))}
+      </div>
+    </section>
+
+    <hr class="hairline section-divider" />
+
+    <!-- 04 — THINKING & NOTES -->
+    <section class="content-section" aria-labelledby="notes-heading">
+      <div class="section-top">
+        <div>
+          <span class="eyebrow">Reflections &amp; Logs</span>
+          <h2 id="notes-heading" class="section-heading">Recent Notes &amp; Essays</h2>
+        </div>
+        <a href="/notes" class="section-more-link">View all notes &rarr;</a>
+      </div>
+
+      <div class="editorial-grid">
+        {sortedNotes.map((item) => (
+          <ExecutionCard
+            href={`/notes/${item.slug}`}
+            title={item.data.title}
+            description={`Technical field notes and inquiries covering ${item.data.tags.join(', ')}.`}
+            date={item.data.date}
+            tags={item.data.tags}
+            category={item.data.category}
+            actionText="Read essay &rarr;"
+          />
+        ))}
+      </div>
+    </section>
+
+    <hr class="hairline section-divider" />
+
+    <!-- 06 — CLOSING -->
+    <section class="closing-section">
+      <div class="closing-content">
+        <h2 class="closing-title">Inquiries &amp; Collaboration</h2>
+        <p class="prose closing-text">
+          I am always interested in discussing neuro-symbolic reasoning, formal verification in healthcare, 
+          low-level graphics programming, or academic research initiatives.
+        </p>
+        <div class="closing-actions">
+          <a 
+            href="javascript:void(0);" 
+            id="closing-contact-btn" 
+            class="button primary"
+            data-user="shagotosarkar"
+            data-host="gmail.com"
+          >
+            Get in touch &rarr;
+          </a>
+          <a href="https://github.com/shagoto-sarkar" target="_blank" rel="noopener noreferrer" class="button">
+            GitHub Profile
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (function() {
+    const btn = document.getElementById('closing-contact-btn');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const u = this.getAttribute('data-user') || 'shagotosarkar';
+        const h = this.getAttribute('data-host') || 'gmail.com';
+        window.location.href = 'mailto:' + u + '@' + h;
+      });
+    }
+  })();
+</script>
+
+<style>
+  .hero-section {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+
+  .hero-intro {
+    max-width: 860px;
+  }
+
+  .hero-heading {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 1.15;
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-6);
+    color: var(--color-text-primary);
+  }
+
+  .hero-prose {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
+  }
+
+  .hero-links {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .section-divider {
+    margin: var(--space-16) 0;
+  }
+
+  .focus-section {
+    padding: var(--space-4) 0;
+  }
+
+  .focus-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .focus-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .focus-item {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    padding: var(--space-5);
+  }
+
+  .focus-topic {
+    font-family: var(--font-editorial);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--color-text-primary);
+  }
+
+  .focus-desc {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .content-section {
+    padding: var(--space-4) 0;
+  }
+
+  .section-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .section-heading {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .section-more-link {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .section-more-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  .editorial-grid.three-col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .closing-section {
+    padding: var(--space-6) 0 var(--space-12) 0;
+  }
+
+  .closing-content {
+    max-width: 680px;
+  }
+
+  .closing-title {
+    font-size: 2rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .closing-text {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+  }
+
+  .closing-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 900px) {
+    .focus-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .editorial-grid, .editorial-grid.three-col {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-heading {
+      font-size: 2.35rem;
+    }
+  }
+</style>

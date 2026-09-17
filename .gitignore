@@ -1,0 +1,17 @@
+# Build outputs
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment and editor
+.env
+.env.*
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Scratch & extracted files
+docx_extracted.txt
