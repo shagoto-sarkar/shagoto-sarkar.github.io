@@ -165,15 +165,14 @@ const sortedNotes = [...allNotes].sort((a, b) => b.data.date.getTime() - a.data.
           low-level graphics programming, or academic research initiatives.
         </p>
         <div class="closing-actions">
-          <a 
-            href="javascript:void(0);" 
+          <button 
+            type="button" 
             id="closing-contact-btn" 
             class="button primary"
-            data-user="shagotosarkar"
-            data-host="gmail.com"
+            onclick="window.openContactModal && window.openContactModal()"
           >
             Get in touch &rarr;
-          </a>
+          </button>
           <a href="https://github.com/shagoto-sarkar" target="_blank" rel="noopener noreferrer" class="button">
             GitHub Profile
           </a>
@@ -182,20 +181,6 @@ const sortedNotes = [...allNotes].sort((a, b) => b.data.date.getTime() - a.data.
     </section>
   </div>
 </BaseLayout>
-
-<script is:inline>
-  (function() {
-    const btn = document.getElementById('closing-contact-btn');
-    if (btn) {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const u = this.getAttribute('data-user') || 'shagotosarkar';
-        const h = this.getAttribute('data-host') || 'gmail.com';
-        window.location.href = 'mailto:' + u + '@' + h;
-      });
-    }
-  })();
-</script>
 
 <style>
   .hero-section {

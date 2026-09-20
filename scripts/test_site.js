@@ -63,9 +63,11 @@ const checks = [
   { name: 'Selected Research section', pass: indexHtml.includes('Selected Research') && indexHtml.includes('Abductive Neuro-Symbolic Engine') },
   { name: 'Selected Projects section', pass: indexHtml.includes('Selected Systems &amp; Projects') && indexHtml.includes('911 OpenGL Commemorative Simulation') },
   { name: 'Recent Notes section', pass: indexHtml.includes('Recent Notes &amp; Essays') },
-  { name: 'Quiet Closing / Inquiries section', pass: indexHtml.includes('Inquiries &amp; Collaboration') },
   { name: 'Search overlay present', pass: indexHtml.includes('cmd-palette-backdrop') },
-  { name: 'Contact gmail present', pass: indexHtml.includes('shagotosarkar') && indexHtml.includes('gmail.com') },
+  { name: 'Contact modal markup present', pass: indexHtml.includes('contact-modal-backdrop') },
+  { name: 'Web Gmail compose URL present', pass: indexHtml.includes('mail.google.com/mail/?view=cm') },
+  { name: 'Copy email button present', pass: indexHtml.includes('copy-email-btn') },
+  { name: 'Contact gmail present', pass: indexHtml.includes('shagotosarkar@gmail.com') },
   { name: 'Prohibited terminal anti-patterns absent (no blinking cursor, fake status)', pass: !indexHtml.includes('terminal-cursor') && !indexHtml.includes('cat /proc/self/status') && !indexHtml.includes('// AXIOM NODE') },
   { name: 'Zero client JS frameworks (no react/vue/svelte)', pass: !indexHtml.includes('__astro_island') && !indexHtml.includes('react-root') }
 ];

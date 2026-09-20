@@ -1,0 +1,261 @@
+---
+// ContactModal Component — Elegant in-place Gmail and email interaction dialog
+---
+
+<div id="contact-modal-backdrop" class="contact-backdrop" aria-hidden="true" style="display: none;">
+  <div class="contact-card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+    <div class="contact-card-header">
+      <div>
+        <span class="eyebrow">Communication</span>
+        <h3 id="contact-modal-title" class="contact-modal-title">Contact via Gmail</h3>
+      </div>
+      <button type="button" id="contact-modal-close" class="contact-close-btn" aria-label="Close dialog">
+        Esc
+      </button>
+    </div>
+
+    <div class="contact-card-body">
+      <div class="email-display-container">
+        <span class="email-label">Email Address:</span>
+        <div class="email-field">
+          <code class="email-text" id="target-email">shagotosarkar@gmail.com</code>
+          <button type="button" id="copy-email-btn" class="button copy-btn" title="Copy to clipboard">
+            <span id="copy-btn-label">Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="contact-options-grid">
+        <a 
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=shagotosarkar@gmail.com&su=Inquiry%20%E2%80%94%20Shagoto%20Sarkar"
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="button primary option-btn"
+          id="web-gmail-btn"
+        >
+          <svg class="option-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>Compose in Gmail (Web) &rarr;</span>
+        </a>
+
+        <a 
+          href="mailto:shagotosarkar@gmail.com?subject=Inquiry%20%E2%80%94%20Shagoto%20Sarkar" 
+          class="button option-btn fallback-btn"
+        >
+          <span>Open Default Mail Client</span>
+        </a>
+      </div>
+
+      <p class="contact-note">
+        I welcome inquiries on neuro-symbolic reasoning, clinical guideline formalization, low-level systems, or academic collaborations.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .contact-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-4);
+  }
+
+  .contact-card {
+    width: 100%;
+    max-width: 520px;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+    overflow: hidden;
+  }
+
+  .contact-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-base);
+  }
+
+  .contact-modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .contact-close-btn {
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    transition: color var(--motion-duration) ease, border-color var(--motion-duration) ease;
+  }
+
+  .contact-close-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-secondary);
+  }
+
+  .contact-card-body {
+    padding: var(--space-6);
+  }
+
+  .email-display-container {
+    margin-bottom: var(--space-6);
+  }
+
+  .email-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-2);
+  }
+
+  .email-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-subtle);
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .email-text {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    color: var(--color-text-primary);
+    background: transparent;
+    padding: 0;
+    border: none;
+  }
+
+  .copy-btn {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+
+  .contact-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .option-btn {
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 0.9375rem;
+    text-decoration: none;
+  }
+
+  .option-icon {
+    flex-shrink: 0;
+  }
+
+  .fallback-btn {
+    color: var(--color-text-secondary);
+  }
+
+  .fallback-btn:hover {
+    color: var(--color-text-primary);
+  }
+
+  .contact-note {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    margin: 0;
+    border-top: 1px solid var(--color-border-subtle);
+    padding-top: var(--space-4);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    const backdrop = document.getElementById('contact-modal-backdrop');
+    const closeBtn = document.getElementById('contact-modal-close');
+    const copyBtn = document.getElementById('copy-email-btn');
+    const copyLabel = document.getElementById('copy-btn-label');
+    const emailToCopy = 'shagotosarkar@gmail.com';
+
+    function openModal() {
+      if (!backdrop) return;
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden', 'false');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeModal() {
+      if (!backdrop) return;
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          closeModal();
+        }
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop && backdrop.style.display !== 'none') {
+        e.preventDefault();
+        closeModal();
+      }
+    });
+
+    if (copyBtn && copyLabel) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(emailToCopy);
+          }
+          copyLabel.textContent = '✓ Copied!';
+          copyBtn.style.borderColor = 'var(--color-accent)';
+          setTimeout(() => {
+            copyLabel.textContent = 'Copy';
+            copyBtn.style.borderColor = '';
+          }, 2000);
+        } catch (err) {
+          copyLabel.textContent = '✓ Copied!';
+          setTimeout(() => {
+            copyLabel.textContent = 'Copy';
+          }, 2000);
+        }
+      });
+    }
+
+    window.openContactModal = openModal;
+  })();
+</script>

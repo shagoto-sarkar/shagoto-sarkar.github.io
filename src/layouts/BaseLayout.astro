@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import CommandPalette from '../components/CommandPalette.astro';
+import ContactModal from '../components/ContactModal.astro';
 
 interface Props {
   title?: string;
@@ -80,15 +81,14 @@ const currentPath = Astro.url.pathname;
           >
             CV
           </a>
-          <a 
-            href="javascript:void(0);" 
+          <button 
+            type="button" 
             id="nav-contact-link"
-            class="nav-link"
-            data-user="shagotosarkar"
-            data-host="gmail.com"
+            class="nav-link nav-contact-btn"
+            onclick="window.openContactModal && window.openContactModal()"
           >
             Contact
-          </a>
+          </button>
           <button 
             type="button" 
             class="search-trigger-btn" 
@@ -121,15 +121,14 @@ const currentPath = Astro.url.pathname;
         </div>
 
         <div class="footer-links">
-          <a 
-            href="javascript:void(0);" 
+          <button 
+            type="button" 
             id="footer-contact-link"
-            class="footer-link"
-            data-user="shagotosarkar"
-            data-host="gmail.com"
+            class="footer-link footer-contact-btn"
+            onclick="window.openContactModal && window.openContactModal()"
           >
             shagotosarkar@gmail.com
-          </a>
+          </button>
           <a 
             href="https://github.com/shagoto-sarkar" 
             target="_blank" 
@@ -149,27 +148,9 @@ const currentPath = Astro.url.pathname;
       </div>
     </footer>
 
-    <!-- Search Overlay -->
+    <!-- Modals -->
     <CommandPalette />
-
-    <!-- Obfuscated Contact Link Handler -->
-    <script is:inline>
-      (function() {
-        function attachMailto(id) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.addEventListener('click', function(e) {
-              e.preventDefault();
-              const u = this.getAttribute('data-user') || 'shagotosarkar';
-              const h = this.getAttribute('data-host') || 'gmail.com';
-              window.location.href = 'mailto:' + u + '@' + h;
-            });
-          }
-        }
-        attachMailto('nav-contact-link');
-        attachMailto('footer-contact-link');
-      })();
-    </script>
+    <ContactModal />
   </body>
 </html>
 
@@ -317,6 +298,24 @@ const currentPath = Astro.url.pathname;
 
   .footer-link:hover {
     color: var(--color-accent);
+  }
+
+  .nav-contact-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    line-height: inherit;
+  }
+
+  .footer-contact-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    line-height: inherit;
+    padding: 0;
+    text-align: left;
   }
 
   @media (max-width: 640px) {
