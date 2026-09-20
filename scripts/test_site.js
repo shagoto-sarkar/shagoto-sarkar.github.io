@@ -18,7 +18,10 @@ const expectedFiles = [
   'notes/index.html',
   'notes/headless-ubuntu-tailscale/index.html',
   'notes/8086-microprocessor-assembly/index.html',
-  'notes/moral-complexity-dostoevsky-arcane/index.html'
+  'notes/moral-complexity-dostoevsky-arcane/index.html',
+  'robots.txt',
+  'sitemap-index.xml',
+  'sitemap-0.xml'
 ];
 
 let failed = false;
@@ -143,6 +146,67 @@ if (hasGaramond && hasMono) {
   console.error('[FAIL] Font files missing');
   failed = true;
 }
+
+console.log('\n=== SEO & INDEXING ARTIFACT CHECKS ===');
+
+// 1. Robots.txt verification
+const robotsContent = fs.readFileSync(path.join(distDir, 'robots.txt'), 'utf8');
+if (robotsContent.includes('User-agent: *') && 
+    robotsContent.includes('Allow: /') && 
+    robotsContent.includes('Sitemap: https://shagoto.me/sitemap-index.xml')) {
+  console.log('[PASS] robots.txt contains User-agent: *, Allow: /, and Sitemap index directive');
+} else {
+  console.error('[FAIL] robots.txt is missing expected crawler or sitemap directives');
+  failed = true;
+}
+
+// 2. Sitemap index and sitemap-0 verification
+const sitemapIndexContent = fs.readFileSync(path.join(distDir, 'sitemap-index.xml'), 'utf8');
+const sitemap0Content = fs.readFileSync(path.join(distDir, 'sitemap-0.xml'), 'utf8');
+
+if (sitemapIndexContent.includes('sitemap-0.xml')) {
+  console.log('[PASS] sitemap-index.xml successfully references sitemap-0.xml');
+} else {
+  console.error('[FAIL] sitemap-index.xml does not reference sitemap-0.xml');
+  failed = true;
+}
+
+if (sitemap0Content.includes('https://shagoto.me/') && 
+    sitemap0Content.includes('https://shagoto.me/research/') && 
+    sitemap0Content.includes('https://shagoto.me/projects/') && 
+    sitemap0Content.includes('https://shagoto.me/notes/') && 
+    !sitemap0Content.includes('404')) {
+  console.log('[PASS] sitemap-0.xml contains primary canonical routes and excludes 404');
+} else {
+  console.error('[FAIL] sitemap-0.xml missing routes or unexpectedly includes 404');
+  failed = true;
+}
+
+// 3. Canonical tag verification on pages
+const checkPageCanonical = (filePath, expectedCanonical) => {
+  const content = fs.readFileSync(path.join(distDir, filePath), 'utf8');
+  return content.includes(`<link rel="canonical" href="${expectedCanonical}"`);
+};
+
+if (checkPageCanonical('index.html', 'https://shagoto.me/') &&
+    checkPageCanonical('research/index.html', 'https://shagoto.me/research/') &&
+    checkPageCanonical('projects/opengl-lower-manhattan/index.html', 'https://shagoto.me/projects/opengl-lower-manhattan/')) {
+  console.log('[PASS] Canonical tags present with absolute https://shagoto.me URLs');
+} else {
+  console.error('[FAIL] Canonical tags missing or incorrect on HTML pages');
+  failed = true;
+}
+
+// 4. 404 page noindex verification
+const notFoundHtml = fs.readFileSync(path.join(distDir, '404.html'), 'utf8');
+if (notFoundHtml.includes('<meta name="robots" content="noindex, nofollow"') &&
+    !notFoundHtml.includes('<link rel="canonical"')) {
+  console.log('[PASS] 404.html contains noindex, nofollow and omits canonical tag');
+} else {
+  console.error('[FAIL] 404.html lacks noindex meta tag or incorrectly includes canonical link');
+  failed = true;
+}
+
 
 console.log('\n=== OVERALL STATUS ===');
 if (failed) {

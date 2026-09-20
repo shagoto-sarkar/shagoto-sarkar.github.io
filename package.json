@@ -13,6 +13,7 @@
     "test": "astro build && astro check && node scripts/test_site.js"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource/eb-garamond": "^5.2.5",
     "@fontsource/jetbrains-mono": "^5.2.5",
     "astro": "^5.4.2"
