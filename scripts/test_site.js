@@ -71,6 +71,11 @@ const checks = [
   { name: 'Web Gmail compose URL present', pass: indexHtml.includes('mail.google.com/mail/?view=cm') },
   { name: 'Copy email button present', pass: indexHtml.includes('copy-email-btn') },
   { name: 'Contact gmail present', pass: indexHtml.includes('shagotosarkar@gmail.com') },
+  { name: 'Footer WhatsApp link present', pass: indexHtml.includes('https://wa.me/8801771425996') && indexHtml.includes('wp: message') },
+  { name: 'Footer Instagram link present', pass: indexHtml.includes('https://www.instagram.com/shagotosarkar/') && indexHtml.includes('ig: @shagotosarkar') },
+  { name: 'Footer Facebook link present', pass: indexHtml.includes('https://www.facebook.com/shagotosarkar666') && indexHtml.includes('fb: /shagoto') },
+  { name: 'Footer LinkedIn link present', pass: indexHtml.includes('https://linkedin.com/in/shagoto-sarkar') },
+  { name: 'Footer contact button present and wired to modal', pass: indexHtml.includes('footer-contact-link') && indexHtml.includes('openContactModal') },
   { name: 'Prohibited terminal anti-patterns absent (no blinking cursor, fake status)', pass: !indexHtml.includes('terminal-cursor') && !indexHtml.includes('cat /proc/self/status') && !indexHtml.includes('// AXIOM NODE') },
   { name: 'Zero client JS frameworks (no react/vue/svelte)', pass: !indexHtml.includes('__astro_island') && !indexHtml.includes('react-root') }
 ];
@@ -123,6 +128,14 @@ if (openglHtml.includes('Mahadi')) {
   console.log('[PASS] 911 OpenGL simulation credits collaboration with Mahadi');
 } else {
   console.error('[FAIL] Mahadi collaboration credit missing');
+  failed = true;
+}
+
+// OpenGL repository link check
+if (openglHtml.includes('https://github.com/shagoto-sarkar/graphics_lab/tree/main/OpenGl_Project/911_v2')) {
+  console.log('[PASS] 911 OpenGL simulation technical brief links to correct graphics_lab subfolder repository');
+} else {
+  console.error('[FAIL] 911 OpenGL simulation repository link incorrect or missing');
   failed = true;
 }
 

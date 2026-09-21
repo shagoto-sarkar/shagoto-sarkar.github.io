@@ -5,7 +5,7 @@ techStack: ["C++", "OpenGL", "GLSL", "GLFW"]
 date: 2024-09-11
 collaborators: ["Mahadi"]
 demoVideoAvailable: true
-repoUrl: "https://github.com/shagoto-sarkar/opengl-lower-manhattan"
+repoUrl: "https://github.com/shagoto-sarkar/graphics_lab/tree/main/OpenGl_Project/911_v2"
 ---
 
 > **Collaboration Note:** Co-developed in direct engineering collaboration with **Mahadi**.

@@ -129,30 +129,69 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           </p>
         </div>
 
-        <div class="footer-links">
-          <button 
-            type="button" 
-            id="footer-contact-link"
-            class="footer-link footer-contact-btn"
-            onclick="window.openContactModal && window.openContactModal()"
-          >
-            shagotosarkar@gmail.com
-          </button>
-          <a 
-            href="https://github.com/shagoto-sarkar" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="footer-link"
-          >
-            GitHub
-          </a>
-          <a 
-            href="/cv.pdf" 
-            download="Shagoto_Sarkar_CV.pdf" 
-            class="footer-link"
-          >
-            Curriculum Vitae
-          </a>
+        <div class="footer-links-container">
+          <!-- ROW 1: Primary Professional Links -->
+          <div class="footer-row primary-row">
+            <button 
+              type="button" 
+              id="footer-contact-link"
+              class="footer-link footer-contact-btn"
+              onclick="window.openContactModal && window.openContactModal()"
+            >
+              shagotosarkar@gmail.com
+            </button>
+            <a 
+              href="https://github.com/shagoto-sarkar" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="footer-link"
+            >
+              GitHub
+            </a>
+            <a 
+              href="/cv.pdf" 
+              download="Shagoto_Sarkar_CV.pdf" 
+              class="footer-link"
+            >
+              Curriculum Vitae
+            </a>
+          </div>
+
+          <!-- ROW 2: Secondary Social Links -->
+          <div class="footer-row secondary-row">
+            <a 
+              href="https://wa.me/8801771425996" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="social-link"
+            >
+              wp: message
+            </a>
+            <a 
+              href="https://www.instagram.com/shagotosarkar/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="social-link"
+            >
+              ig: @shagotosarkar
+            </a>
+            <a 
+              href="https://www.facebook.com/shagotosarkar666" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="social-link"
+            >
+              fb: /shagoto
+            </a>
+            <a 
+              href="https://linkedin.com/in/shagoto-sarkar" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="social-link"
+            >
+              in: linkedin
+            </a>
+          </div>
         </div>
       </div>
     </footer>
@@ -292,7 +331,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     line-height: 1.5;
   }
 
-  .footer-links {
+  .footer-links-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .footer-row {
     display: flex;
     gap: var(--space-6);
     flex-wrap: wrap;
@@ -307,6 +353,19 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   .footer-link:hover {
     color: var(--color-accent);
+  }
+
+  .social-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color var(--motion-duration) ease;
+  }
+
+  .social-link:hover {
+    color: var(--color-text-primary);
   }
 
   .nav-contact-btn {
@@ -339,6 +398,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     .footer-inner {
       flex-direction: column;
       gap: var(--space-6);
+    }
+
+    .footer-links-container {
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .footer-row {
+      gap: var(--space-4);
     }
   }
 </style>
