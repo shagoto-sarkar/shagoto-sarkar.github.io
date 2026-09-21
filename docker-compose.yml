@@ -1,6 +1,8 @@
 services:
   website:
-    build: .
+    build:
+      context: .
+      network: host
     container_name: shagoto-website-v2
     restart: unless-stopped
     ports:
